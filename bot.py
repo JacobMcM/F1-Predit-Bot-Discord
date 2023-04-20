@@ -33,24 +33,33 @@ except Exception as e:
 # links us to the client with the ability to call bot.event
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
+## CLASSES ## - note* move classes and functions to other files
 
+# **UNFINISHED** 
+# represents the prediction made by a user
+class Prediction:
+    hello = ""
+    def __init__(self):
+        self.hello = "hello"
 
-## FUNCTIONS ##
+## FUNCTIONS ## - note* move classes and functions to other files
 
-# returns the json data of a driver from the f1 api, based on the entered number
-def get_driver(driver):
-    url_json = "http://ergast.com/api/f1/current/driverStandings.json"
+# returns the current f1 standings
+def get_standings():
+    url = "http://ergast.com/api/f1/current/driverStandings.json"
     payload = {}
     headers = {}
 
-    response = requests.request("GET", url_json, headers=headers, data=payload)
+    response = requests.request("GET", url, headers=headers, data=payload)
 
     data = json.loads(response.text)
 
-    Standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    return standings
 
-    print(len(Standings))
-    return (Standings[int(driver)])
+# returns driver at position 'pos' in the standings
+def get_driver(pos):
+    return get_standings()[int([pos])]
 
 # takes an array of predictions, shortens each to 3 letters, makes them capitol
 # returns cleaned prediction, if driver cannot be cleaned (uses numbers, or less then 3 letters) returns string with reason
@@ -84,12 +93,8 @@ def clean_prediction(arr):
     
     return arr
 
-        
-
-        
-
-
-# given a driver (three letter capitol code), checks the discord api to see if they exist
+# **UNFINISHED** 
+# given a driver (three letter capitol code), checks the f1 api to see if they exist
 # returns true if they exist, otherwise false
 def verify_driver(drv):
     return
@@ -115,6 +120,22 @@ def check_prediction(arr):
     
     # if all tests are passed, the arr returned will be a cleaned Array (rather then string)
     return arr
+
+# **UNFINISHED** 
+# calls all prediction values from the db and initializes them as python classes
+# investigate if python classes could be inserted into JSON to make irrelevant
+# following functions preform similar roles
+def get_predictions():
+    return
+
+def update_prediction():
+    return
+
+def add_prediction():
+    return
+
+def remove_prediction():
+    return
 
 
 ## EVENTS ##
@@ -175,6 +196,7 @@ async def predict(ctx, *arr):
 async def getPredictions(ctx):
     auth = str(ctx.author)
     key = {'author': auth}
+
 
     for m in db.server_messages_log.find(key):
         print(m)
