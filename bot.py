@@ -33,7 +33,7 @@ except Exception as e:
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
 
-## FUCTIONS ##
+## FUNCTIONS ##
 
 # returns the json data of a driver from the f1 api, based on the entered number
 def get_driver(driver):
@@ -51,7 +51,7 @@ def get_driver(driver):
     return (Standings[int(driver)])
 
 # takes an array of predictions, shortens each to 3 letters, makes them capitol
-# returns cleaned prediction, raises exception if driver cannot be cleaned (uses numbers, or less then 3 letters)
+# returns cleaned prediction, if driver cannot be cleaned (uses numbers, or less then 3 letters) returns string with reason
 def clean_prediction(arr):
     return
 
@@ -63,9 +63,25 @@ def verify_driver(drv):
 
 
 # takes an array of predictions, makes sure its longer then 19 drivers, cleans the array, then verifies if the driver exists for this season
-# returns the array upon completion, raises an Exception if a problem occurs
+# returns the array upon completion, if it fails it returns a string containing the reason for failure
 def check_prediction(arr):
-    return
+    if len(arr) < 20:
+        return "not enough drivers in prediction, there should be at least 20"
+    
+    arr = clean_prediction(arr)
+
+    # if clean_prediction has found an error, it will return a string instead of a cleaned array
+    # the string will be an error message deatailing what went wrong
+    if isinstance(arr,str):
+        return arr
+
+    # for every driver in arr, if one doesnt appear in the standings we return a string with that driver and an error message
+    for drv in arr:
+        if not verify_driver(drv):
+            return drv + " is not a driver in this seasons standings"
+    
+    # if all tests are passed, the arr returned will be a cleaned Array (rather then string)
+    return arr
 
 
 ## EVENTS ##
@@ -82,6 +98,10 @@ async def on_ready():
 # used to test various features
 @bot.command()
 async def test(ctx, prt):
+    a = "hello"
+    print(type(a))
+    if isinstance(a,str):
+        await ctx.send("yes?")
     print("this is a test")
 
 # $driver: calls get_driver for a specific number
@@ -93,6 +113,12 @@ async def driver(ctx, num):
 # $predict: recives an array of predictions, puts them through check_prediction(), then adds them to the db
 @bot.command()
 async def predict(ctx, *arr):
+    arr = check_prediction(arr)
+
+    # if arr is a string instead of an arr, the string will contain information about why the process failed, and then we exit (return)
+    if isinstance(arr, str):
+        await ctx.send(arr)
+        return
 
     db.predictions.insert_one(
         {
