@@ -7,6 +7,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
 from dotenv import load_dotenv
+import re
 
 # loads data from the .env file
 load_dotenv()
@@ -33,6 +34,7 @@ except Exception as e:
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
 
+
 ## FUNCTIONS ##
 
 # returns the json data of a driver from the f1 api, based on the entered number
@@ -53,7 +55,38 @@ def get_driver(driver):
 # takes an array of predictions, shortens each to 3 letters, makes them capitol
 # returns cleaned prediction, if driver cannot be cleaned (uses numbers, or less then 3 letters) returns string with reason
 def clean_prediction(arr):
-    return
+    
+    # ensure arr is a list
+    arr = list(arr)
+
+    for i in range(len(arr)):
+        # temp variable drv represent arr at i or driver at i
+        drv = arr[i]
+
+        # a regex of only alphabet characters
+        regex = re.compile('[^a-zA-Z]')
+
+        # remove any non-alphabet characters
+        drv = regex.sub('', drv)
+
+        # if the drv is less then 3 characters it wont match the api
+        if len(drv) < 3:
+            return arr[i] + " is not a valid driver"
+        
+        #shorten drv to 3 letters
+        drv = drv[:3]
+
+        # make drv all uppercase
+        drv = drv.upper()
+
+        # reassign arr at i to drv
+        arr[i] = drv
+    
+    return arr
+
+        
+
+        
 
 
 # given a driver (three letter capitol code), checks the discord api to see if they exist
@@ -97,22 +130,31 @@ async def on_ready():
 #bot.command only reacts if a message begins with the preset comand operator "$"
 # used to test various features
 @bot.command()
-async def test(ctx, prt):
+async def test(ctx):
+
     a = "hello"
-    print(type(a))
-    if isinstance(a,str):
-        await ctx.send("yes?")
+    print(a[:4])
     print("this is a test")
 
 # $driver: calls get_driver for a specific number
 @bot.command()
 async def driver(ctx, num):
     await ctx.send(get_driver(num))
+
+# $clean: tests the clean_prediction function
+@bot.command()
+async def clean(ctx, *arr):
+    # turn arr from tuple to list
+    arr = list(arr)
+    arr = clean_prediction(arr)
+    await ctx.send(arr)
     
 # **INCOMPLETE**
 # $predict: recives an array of predictions, puts them through check_prediction(), then adds them to the db
 @bot.command()
 async def predict(ctx, *arr):
+    # turn arr from tuple to list
+    arr = list(arr)
     arr = check_prediction(arr)
 
     # if arr is a string instead of an arr, the string will contain information about why the process failed, and then we exit (return)
