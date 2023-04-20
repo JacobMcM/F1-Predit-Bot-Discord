@@ -1,4 +1,8 @@
-## FUNCTIONS ## - note* move functions to other files
+## FUNCTIONS ##
+
+import json
+import requests
+import re
 
 # returns the current f1 standings
 def get_standings():

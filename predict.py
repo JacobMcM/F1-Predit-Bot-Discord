@@ -1,5 +1,3 @@
-import json
-
 class Prediction:
     def __init__(self, id="", user="", historic_score={}, prediction={}):
         # string representing the mongo-assigned id
@@ -19,11 +17,8 @@ class Prediction:
         self.prediction = prediction
 
         ## Class Invarient: 
-        ## the sum of each each entry in prediction must equal the the current_score
-        ## current_score must always equal the most recent entry of historic_score
+        ## the sum of each each entry in prediction must equal the most recent entry of historic_score
     
-
-
 
 # takes in a predition object, and returns a dictionary made from its state variables
 def predict_to_dict(pred):
@@ -36,7 +31,6 @@ def predict_to_dict(pred):
     return prediction_dictionary
 
 
-## UNFINISHED ##
 # takes a dictionary, and transforms it into a new prediction
 def dict_to_predict(dict):
     id = dict['_id']
@@ -46,4 +40,3 @@ def dict_to_predict(dict):
 
     pred = Prediction(id,user,historic_score,prediction)
     return pred
-

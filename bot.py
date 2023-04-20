@@ -9,10 +9,8 @@ import os
 from dotenv import load_dotenv
 import re
 
-from predict import Prediction
-from predict import predict_to_dict
-from predict import dict_to_predict
-
+from predict import *
+from functions import *
 
 # loads data from the .env file
 load_dotenv()
@@ -22,7 +20,6 @@ MONGO_URI = os.getenv('MONGO_URI')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 #get id of the test channel
 CHANNEL_ID = os.getenv('CHANNEL_ID')
-
 
 # Create a new client and connect to the server
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
@@ -38,21 +35,8 @@ except Exception as e:
 # links us to the client with the ability to call bot.event
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
-# **UNFINISHED** 
-# calls all prediction values from the db and initializes them as python classes
-# investigate if python classes could be inserted into JSON to make irrelevant
-# following functions preform similar roles
-def get_predictions():
-    return
 
-def update_prediction():
-    return
 
-def add_prediction():
-    return
-
-def remove_prediction():
-    return
 
 
 ## EVENTS ##
