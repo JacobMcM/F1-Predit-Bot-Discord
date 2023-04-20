@@ -28,17 +28,22 @@ class Prediction:
 # takes in a predition object, and returns a dictionary made from its state variables
 def predict_to_dict(pred):
     if not isinstance(pred, Prediction):
-        raise TypeError("can only convert Prediction into JSON")
+        raise TypeError("can only convert Prediction objects to dictionary")
     
     # first we convert our state variables into a dictionary
-    prediction_Dictionary = dict(id=pred.id, user=pred.user, historic_score=pred.historic_score, prediction=pred.prediction)
+    prediction_dictionary = dict(id=pred.id, user=pred.user, historic_score=pred.historic_score, prediction=pred.prediction)
 
-    return prediction_Dictionary
+    return prediction_dictionary
 
 
 ## UNFINISHED ##
-# takes a Json string, and transforms it into a new prediction
-def JSON_to_predict(j):
-    pred = json.load(j)
+# takes a dictionary, and transforms it into a new prediction
+def dict_to_predict(dict):
+    id = dict['_id']
+    user = dict['user']
+    historic_score = dict['historic_score']
+    prediction = dict['prediction']
+
+    pred = Prediction(id,user,historic_score,prediction)
     return pred
 
