@@ -7,7 +7,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import os
 from dotenv import load_dotenv
-import re
 
 from predict import *
 from functions import *
@@ -32,8 +31,42 @@ try:
 except Exception as e:
     print(e)
 
-# links us to the client with the ability to call bot.event
+# links us to the discord client with the ability to call bot.event
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
+
+# used as a global variable to store all current Prediction objects
+# is assigned the list of predictions on MongoDB on startup 
+list_predictions = pull_predictions()
+
+
+
+# push_prediction
+# recieves a prediction object, uses the id of that prediction to insert it back into the mongodb
+# called whenever a prediction is updates
+
+
+# push_all_predictions
+# for each prediction in list_prediction call push_prediction
+# called after succesful post_race_update
+
+
+# add prediction
+# get passed a prediction in the form of a list
+# verify the list is a valid f1 prediction
+# create a dictionary in the style of a prediction object
+# insert that dict into mongo (to generate a new _id)
+# pull that prediction from mongo, turn it into a Prediction object
+# add predict to list_prediction
+
+# get current standings (pull the current_score of each prediction, and sort by rank)
+
+# graph historic standings (long term using built-in python graph functions)
+
+# post-race-update
+# check if the current f1 standings have changed, if so...
+# call the update_score function for each prediction
+# call push_all_predictions
+
 
 
 
@@ -84,11 +117,14 @@ async def predict(ctx, *arr):
     historic_score = {}
     prediction = {}
 
-    # for the driver in the prediction
     for drv in arr:
         prediction[drv] = 0
+
+    #instead of immediatly making a prediction object, we will instead make a dictionary, place it into
+
+    prediction_dictionary = dict(user=user, historic_score=historic_score, prediction=prediction)
     
-    prediction = Prediction(id, user, historic_score, prediction)
+    #prediction = Prediction(id, user, historic_score, prediction)
     
     # json version of prediction
     J_pred = predict_to_dict(prediction)
@@ -126,7 +162,9 @@ async def getPredictions(ctx):
 
     for m in db.prediction.find(key):
         await ctx.send(m)
-        print(dict_to_predict(m))
+        print(m)
+        pred = dict_to_predict(m)
+        print(type(pred.prediction))
     
 
 bot.run(BOT_TOKEN)
