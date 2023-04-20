@@ -1,8 +1,37 @@
-## FUNCTIONS ##
-
 import json
 import requests
 import re
+from predict import *
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
+from dotenv import load_dotenv
+import os
+
+# loads data from the .env file
+load_dotenv()
+# get the token for the server
+MONGO_URI = os.getenv('MONGO_URI')
+
+
+# Create a new client and connect to the server
+client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
+db = client.storage
+
+
+
+## FUNCTIONS ##
+
+
+
+# returns list of the data from mongodb transformed to Prediction classes
+def pull_predictions():
+    list = []
+    for m in db.prediction.find():
+        pred = dict_to_predict(m)
+        list.append(pred)
+
+    return list
+
 
 # returns the current f1 standings
 def get_standings():
