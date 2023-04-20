@@ -23,7 +23,7 @@ class Prediction:
         self.historic_score = []
         self.prediction = {}
         for driver in prediction:
-            self.prediction[driver] = 0;
+            self.prediction[driver] = 0
 
     def update_score(curr_standings):
         # curr_standings is a list of the current standings

@@ -9,6 +9,10 @@ import os
 from dotenv import load_dotenv
 import re
 
+from predict import Prediction
+from predict import predict_to_dict
+from predict import JSON_to_predict
+
 # loads data from the .env file
 load_dotenv()
 # get the token for the server
@@ -33,16 +37,10 @@ except Exception as e:
 # links us to the client with the ability to call bot.event
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
-## CLASSES ## - note* move classes and functions to other files
 
-# **UNFINISHED** 
-# represents the prediction made by a user
-class Prediction:
-    hello = ""
-    def __init__(self):
-        self.hello = "hello"
 
-## FUNCTIONS ## - note* move classes and functions to other files
+
+## FUNCTIONS ## - note* move functions to other files
 
 # returns the current f1 standings
 def get_standings():
@@ -170,25 +168,50 @@ async def clean(ctx, *arr):
     arr = clean_prediction(arr)
     await ctx.send(arr)
     
+
 # **INCOMPLETE**
 # $predict: recives an array of predictions, puts them through check_prediction(), then adds them to the db
 @bot.command()
 async def predict(ctx, *arr):
     # turn arr from tuple to list
     arr = list(arr)
-    arr = check_prediction(arr)
+    
+    id = "00001"
+    user = str(ctx.author)
+    historic_score = {}
+    prediction = {}
+
+    # for the driver in the prediction
+    for drv in arr:
+        prediction[drv] = 0
+    
+    prediction = Prediction(id, user, historic_score, prediction)
+    
+    # json version of prediction
+    J_pred = predict_to_dict(prediction)
+
+    
+    # insert one takes the value of a dictionary and converts into into JSON on it's own
+    db.prediction.insert_one(
+        J_pred
+    )
+
+    
+    
+    
+    #arr = check_prediction(arr)
 
     # if arr is a string instead of an arr, the string will contain information about why the process failed, and then we exit (return)
-    if isinstance(arr, str):
-        await ctx.send(arr)
-        return
+    #if isinstance(arr, str):
+    #    await ctx.send(arr)
+    #    return
 
-    db.predictions.insert_one(
-        {
-            "message": arr,
-            "author": str(ctx.author),
-        }
-    )
+    #db.predictions.insert_one(
+    #    {
+    #        "message": arr,
+    #        "author": str(ctx.author),
+    #    }
+    #)
 
 # **INCOMPLETE**
 # $getPredictions: returns the prediction of the user who requested the data
