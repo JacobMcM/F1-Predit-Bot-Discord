@@ -11,11 +11,7 @@ class Prediction:
 
         # Dictionary whith keys representing the date a score is change, and entry representing the new score
         self.historic_score = historic_score 
-        
-        # int of the most recent score, retireved from the most recent addition to historic_score
-        ## probably a better Idea to have current score be a returnable function, becuase historic score will likly be empty
-        # self.current_score = self.historic_score[len(self.historic_score)-1]
-        
+                
         # Dictionary of f1 drivers in the order of their predition, tied to their offset
         self.prediction = prediction
 
@@ -54,10 +50,12 @@ def predict_to_dict(pred):
     if not isinstance(pred, Prediction):
         raise TypeError("can only convert Prediction objects to dictionary")
     
-    # first we convert our state variables into a dictionary
-    # note depending on when this func is called keep in mind to not override the mongo _id, this might require further testing
-    prediction_dictionary = dict(_id=pred.id, author=pred.author, historic_score=pred.historic_score, prediction=pred.prediction)
+    # we convert our state variables into a dictionary
+    # note* this dictionary does not contain _id, in an effor to prevent the overriding of mongo assigned _id's
+    # if the i'd of a prediction is needed, it should be pulled from the prediction itself, not this dictionary
+    prediction_dictionary = dict(author=pred.author, historic_score=pred.historic_score, prediction=pred.prediction)
 
+    # return the dictionary
     return prediction_dictionary
 
 
