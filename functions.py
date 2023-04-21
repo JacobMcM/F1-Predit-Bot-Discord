@@ -33,6 +33,27 @@ def pull_predictions():
     return list
 
 
+# recieves a prediction object, uses the id of that prediction to insert it back into the mongodb
+# called whenever a prediction is updated
+def push_prediction(pred):
+    id = pred.id
+    try:
+        db.prediction.find_one_and_replace({"_id":id}, predict_to_dict(pred))
+    except Exception as e:
+        print(e)
+
+
+# given a list of predictions 
+# for each in list call push_prediction
+# called after succesful post_race_update
+def push_all_predictions(list):
+    for pred in list:
+        if not isinstance(pred, Prediction):
+            raise TypeError("not a list of predictions")
+        
+        push_prediction(pred)
+
+
 # returns the current f1 standings
 def get_standings():
     url = "http://ergast.com/api/f1/current/driverStandings.json"

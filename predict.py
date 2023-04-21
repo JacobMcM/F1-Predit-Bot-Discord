@@ -1,12 +1,12 @@
 #from functions import get_standings
 
 class Prediction:
-    def __init__(self, id="", user="", historic_score={}, prediction={}):
+    def __init__(self, id="", author="", historic_score={}, prediction={}):
         # string representing the mongo-assigned id
         self.id = id
 
-        # string representing the user who made the prediction
-        self.user = user
+        # string representing the author who made the prediction
+        self.author = author
 
         # Dictionary whith keys representing the date a score is change, and entry representing the new score
         self.historic_score = historic_score 
@@ -55,7 +55,7 @@ def predict_to_dict(pred):
     
     # first we convert our state variables into a dictionary
     # note depending on when this func is called keep in mind to not override the mongo _id, this might require further testing
-    prediction_dictionary = dict(_id=pred.id, user=pred.user, historic_score=pred.historic_score, prediction=pred.prediction)
+    prediction_dictionary = dict(_id=pred.id, author=pred.author, historic_score=pred.historic_score, prediction=pred.prediction)
 
     return prediction_dictionary
 
@@ -63,9 +63,9 @@ def predict_to_dict(pred):
 # takes a dictionary, and transforms it into a new prediction
 def dict_to_predict(dict):
     id = dict['_id']
-    user = dict['user']
+    author = dict['author']
     historic_score = dict['historic_score']
     prediction = dict['prediction']
 
-    pred = Prediction(id,user,historic_score,prediction)
+    pred = Prediction(id,author,historic_score,prediction)
     return pred
