@@ -1,4 +1,5 @@
-#from functions import get_standings
+import json
+import requests
 
 class Prediction:
     def __init__(self, id="", author="", historic_score={}, prediction={}):
@@ -69,3 +70,20 @@ def dict_to_predict(dict):
 
     pred = Prediction(id,author,historic_score,prediction)
     return pred
+
+# returns the current f1 standings
+def get_standings():
+    url = "http://ergast.com/api/f1/current/driverStandings.json"
+    payload = {}
+    headers = {}
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    data = json.loads(response.text)
+
+    standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    return standings
+
+# returns driver at position 'pos' in the standings
+def get_driver(pos):
+    return get_standings()[int([pos])]

@@ -54,23 +54,6 @@ def push_all_predictions(list):
         push_prediction(pred)
 
 
-# returns the current f1 standings
-def get_standings():
-    url = "http://ergast.com/api/f1/current/driverStandings.json"
-    payload = {}
-    headers = {}
-
-    response = requests.request("GET", url, headers=headers, data=payload)
-
-    data = json.loads(response.text)
-
-    standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
-    return standings
-
-# returns driver at position 'pos' in the standings
-def get_driver(pos):
-    return get_standings()[int([pos])]
-
 # takes an array of predictions, shortens each to 3 letters, makes them capitol
 # returns cleaned prediction, if driver cannot be cleaned (uses numbers, or less then 3 letters) returns string with reason
 def clean_prediction(arr):
