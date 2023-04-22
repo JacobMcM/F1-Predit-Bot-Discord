@@ -12,16 +12,11 @@ load_dotenv()
 # get the token for the server
 MONGO_URI = os.getenv('MONGO_URI')
 
-
 # Create a new client and connect to the server
 client = MongoClient(MONGO_URI, server_api=ServerApi('1'))
 db = client.storage
 
-
-
 ## FUNCTIONS ##
-
-
 
 # returns list of the data from mongodb transformed to Prediction classes
 def pull_predictions():
@@ -53,10 +48,9 @@ def push_all_predictions(list):
         
         push_prediction(pred)
 
-# gets passed a list of driver codes which will be turned into a prediction and added to list_predictions and Mongodb, returns the newly created prediction
+# gets passed a list of driver codes which will be turned into a prediction and added to the Mongodb, returns the newly created prediction
 ## note* requires check_prediction() & Prediction.update_score() before deployment
-def add_prediction(author, pred):
-    
+def add_prediction(author, pred):    
     
     # ensure author is an author
     author = str(author)
@@ -90,10 +84,8 @@ def add_prediction(author, pred):
     #change our predictions id from "temp" to the mongo generated _id
     new_prediction.id = id
 
-    # append our finalized new_prediction to list_predictions
-    list_predictions.append(new_prediction)
-
-    return list_predictions[-1]
+    # returned prediction should be immediatly appended to list_preidctions
+    return new_prediction
 
 
 # takes an array of predictions, shortens each to 3 letters, makes them capitol

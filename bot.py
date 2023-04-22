@@ -95,7 +95,8 @@ async def predict(ctx, *arr):
     # turn arr from tuple to list
     arr = list(arr)
 
-    pred = add_prediction(str(ctx.author), arr)
+    list_predictions.append(add_prediction(str(ctx.author), arr))
+    pred = list_predictions[-1]
     await ctx.send(pred.id)
     await ctx.send(predict_to_dict(pred))
      
