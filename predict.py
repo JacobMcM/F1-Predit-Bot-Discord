@@ -69,8 +69,8 @@ def dict_to_predict(dict):
     pred = Prediction(id,author,historic_score,prediction)
     return pred
 
-# returns the current f1 standings
-def get_standings():
+# returns the current f1 standings in dictionary form
+def get_standings_dict():
     url = "http://ergast.com/api/f1/current/driverStandings.json"
     payload = {}
     headers = {}
@@ -79,10 +79,14 @@ def get_standings():
 
     data = json.loads(response.text)
 
-    standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    standings = data['MRData']['StandingsTable']['StandingsLists'][0]
     print(type(standings))
     return standings
 
-# returns driver at position 'pos' in the standings
+# takes the dictionary form of standings and returns the list of current driver positions
+def get_standings_list():
+    return get_standings_dict()['DriverStandings']
+
+# takes the list of driver positions and returns driver at position 'pos'
 def get_driver(pos):
-    return get_standings()[int([pos])]
+    return get_standings_list()[int([pos])]
