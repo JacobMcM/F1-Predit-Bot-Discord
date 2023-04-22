@@ -18,6 +18,26 @@ db = client.storage
 
 ## FUNCTIONS ##
 
+# pull_standings
+# pull the saved standings from mongodb and return them as a dict
+def pull_standings():
+
+    # find the first item in standings, which only stores a single standings at a time
+    stand = db.standings.find_one({})
+
+    # return found standings
+    return stand
+
+# push_standings
+# is passed a f1 standings dictionary which is inserted into the db
+def push_standings(stand):
+
+    # remove anything currently stored in standings
+    db.standings.delete_many({})
+
+    # insert the new value of standings
+    db.standings.insert_one(stand)
+
 # returns list of the data from mongodb transformed to Prediction classes
 def pull_predictions():
     list = []

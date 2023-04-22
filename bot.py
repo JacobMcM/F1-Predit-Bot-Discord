@@ -34,12 +34,16 @@ except Exception as e:
 # links us to the discord client with the ability to call bot.event
 bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 
-# used as a global variable to store all current Prediction objects
-# is assigned the list of predictions on MongoDB on startup 
+# global variable representing the predictions in mognodb
+# should be updated whenever a prediction in mongodb is updated
 list_predictions = pull_predictions()
 
+# global variable representing the standings in mongodb
+# should be updated whenever standings in mongodb are updated
+stored_standings = pull_standings()
 
-# get current standings (pull the current_score of each prediction, and sort by rank)
+
+# get current scores (pull the current_score of each prediction, and sort by rank)
 
 
 # graph historic standings (long term using built-in python graph functions)
