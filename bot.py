@@ -38,56 +38,6 @@ bot = commands.Bot(command_prefix="$", intents=discord.Intents.all())
 # is assigned the list of predictions on MongoDB on startup 
 list_predictions = pull_predictions()
 
-for l in list_predictions:
-    print(l.id)
-
-# gets passed a list of driver codes which will be turned into a prediction and added to list_predictions and Mongodb
-def add_prediction(author, pred):
-    
-    
-    # ensure author is an author
-    author = str(author)
-    # ensure pred is a list, and not a tuple
-    pred = list(pred)
-
-    #Validate list
-    # check_prediction(arr) # not currently finished
-
-    historic_score = {}
-    prediction = {}
-
-    # for every driver in pred list, set its prediction value to 0
-    for drv in pred:
-        prediction[drv] = 0
-    
-    # create a new prediction with our state variables
-    # note that id is set to temp, this is becuase it will be changed later to the mongo assigned _id
-    new_prediction = Prediction("temp",author,historic_score,prediction)
-
-    # our new_prediction will have no historic score and all prediction values will be 0, so we will update our prediction to have those values
-    #new_prediction.update_score(init) ## doesnt exist yet
-        
-    # insert_one takes a dictionary inserts it into mongo, while .inserted_id will return the id of whats just been inserted
-    id = db.prediction.insert_one(
-        # predict_to_dict transforms a prediction object into a dictionary
-        # note* predict_to_dict ignores the value of id, therefor skipping our id set to "temp"
-        predict_to_dict(new_prediction)
-    ).inserted_id
-
-    #change our predictions id from "temp" to the mongo generated _id
-    new_prediction.id = id
-
-    # append our finalized new_prediction to list_predictions
-    list_predictions.append(new_prediction)
-
-
-
-
-# pull that prediction from mongo, turn it into a Prediction object
-# run update_score(start) on the prediction
-# call push_push(prediction) to update mongo
-# add predict to list_prediction
-
 
 # get current standings (pull the current_score of each prediction, and sort by rank)
 
@@ -145,32 +95,11 @@ async def predict(ctx, *arr):
     # turn arr from tuple to list
     arr = list(arr)
 
-    ## in the future, will instead use add_prediction(arr)
-    # the following is for testing
-    
-    
-    author = str(ctx.author)
-    historic_score = {}
-    prediction = {}
-
-    for drv in arr:
-        prediction[drv] = 0
-
-    #instead of immediatly making a prediction object, we will instead make a dictionary, place it into
-    prediction_dictionary = dict(author=author, historic_score=historic_score, prediction=prediction)
-        
-    # insert one takes the value of a dictionary and converts into into JSON on it's own
-    db.prediction.insert_one(
-        prediction_dictionary
-    )    
-    
-    #arr = check_prediction(arr)
-
-    # if arr is a string instead of an arr, the string will contain information about why the process failed, and then we exit (return)
-    #if isinstance(arr, str):
-    #    await ctx.send(arr)
-    #    return
-
+    pred = add_prediction(str(ctx.author), arr)
+    await ctx.send(pred.id)
+    await ctx.send(predict_to_dict(pred))
+     
+    # saved so I dont forget ;P
     #db.predictions.insert_one(
     #    {
     #        "message": arr,

@@ -53,6 +53,48 @@ def push_all_predictions(list):
         
         push_prediction(pred)
 
+# gets passed a list of driver codes which will be turned into a prediction and added to list_predictions and Mongodb, returns the newly created prediction
+## note* requires check_prediction() & Prediction.update_score() before deployment
+def add_prediction(author, pred):
+    
+    
+    # ensure author is an author
+    author = str(author)
+    # ensure pred is a list, and not a tuple
+    pred = list(pred)
+
+    #Validate list
+    # check_prediction(arr) # not currently finished
+
+    historic_score = {}
+    prediction = {}
+
+    # for every driver in pred list, set its prediction value to 0
+    for drv in pred:
+        prediction[drv] = 0
+    
+    # create a new prediction with our state variables
+    # note that id is set to temp, this is becuase it will be changed later to the mongo assigned _id
+    new_prediction = Prediction("temp",author,historic_score,prediction)
+
+    # our new_prediction will have no historic score and all prediction values will be 0, so we will update our prediction to have those values
+    #new_prediction.update_score(init) ## NOTE doesnt exist yet
+        
+    # insert_one takes a dictionary inserts it into mongo, while .inserted_id will return the id of whats just been inserted
+    id = db.prediction.insert_one(
+        # predict_to_dict transforms a prediction object into a dictionary
+        # note* predict_to_dict ignores the value of id, therefor skipping our id set to "temp"
+        predict_to_dict(new_prediction)
+    ).inserted_id
+
+    #change our predictions id from "temp" to the mongo generated _id
+    new_prediction.id = id
+
+    # append our finalized new_prediction to list_predictions
+    list_predictions.append(new_prediction)
+
+    return list_predictions[-1]
+
 
 # takes an array of predictions, shortens each to 3 letters, makes them capitol
 # returns cleaned prediction, if driver cannot be cleaned (uses numbers, or less then 3 letters) returns string with reason

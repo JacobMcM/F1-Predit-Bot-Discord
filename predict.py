@@ -80,6 +80,7 @@ def get_standings():
     data = json.loads(response.text)
 
     standings = data['MRData']['StandingsTable']['StandingsLists'][0]['DriverStandings']
+    print(type(standings))
     return standings
 
 # returns driver at position 'pos' in the standings
